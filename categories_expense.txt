@@ -1,0 +1,12 @@
+Food
+Transport
+Market
+Mechanic
+Utilities
+Health
+Education
+Entertainment
+Clothing
+Rent
+Leisure
+Other

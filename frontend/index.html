@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance Dashboard - Dark Mode</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <span class="logo-icon">💰</span>
+                <h2>FinApp</h2>
+            </div>
+            <nav>
+                <ul>
+                    <li class="active" data-tab="dashboard">Dashboard</li>
+                    <li data-tab="transactions">Transações</li>
+                    <li data-tab="investments">Investimentos</li>
+                    <li data-tab="cards">Cartões</li>
+                    <li data-tab="settings">Configurações</li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header>
+                <h1 id="page-title">Dashboard Financeiro</h1>
+                <div class="user-info">
+                    <span id="current-date"></span>
+                    <div class="avatar">V</div>
+                </div>
+            </header>
+
+            <!-- ABA DASHBOARD -->
+            <div id="tab-dashboard" class="tab-content">
+                <!-- Top Cards -->
+                <section class="cards-grid">
+                    <div class="card balance">
+                        <h3>Patrimônio Total</h3>
+                        <p class="value" id="total-balance">R$ 0,00</p>
+                        <span class="trend up">▲ 2.5% este mês</span>
+                    </div>
+                    <div class="card expenses">
+                        <h3>Gastos Mensais</h3>
+                        <p class="value" id="total-expenses">R$ 0,00</p>
+                        <span class="trend down">▼ 1.2% este mês</span>
+                    </div>
+                    <div class="card investment">
+                        <h3>Total Investido</h3>
+                        <p class="value" id="total-invested">R$ 0,00</p>
+                        <span class="trend up">▲ 5.4% este mês</span>
+                    </div>
+                    <div class="card cashback">
+                        <h3>Cashback Acumulado</h3>
+                        <p class="value" id="total-cashback">R$ 0,00</p>
+                        <span class="info">Taxa média: 1%</span>
+                    </div>
+                </section>
+
+                <!-- Charts Section -->
+                <section class="charts-section">
+                    <div class="chart-container main-chart">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h3>Evolução de Patrimônio</h3>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <label style="font-size: 12px; color: var(--text-secondary);">Visão:</label>
+                                <select id="evolution-view-select" style="background: var(--bg-color); color: white; border: 1px solid var(--border-color); border-radius: 4px; padding: 4px;">
+                                    <option value="monthly">Mensal (Resumo)</option>
+                                    <option value="detailed">Detalhada (Transação a Transação)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="evolution-chart-wrapper" style="width: 100%; overflow-x: auto; position: relative;">
+                            <div id="evolution-chart-container" style="width: 100%; min-width: 100%; height: 300px;">
+                                <canvas id="evolutionChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container donut-chart">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h3>Distribuição</h3>
+                            <select id="category-type-select" style="background: var(--bg-color); color: white; border: 1px solid var(--border-color); border-radius: 4px; padding: 4px;">
+                                <option value="expense">Despesas</option>
+                                <option value="income">Receitas</option>
+                                <option value="investment">Investimentos</option>
+                            </select>
+                        </div>
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                </section>
+            </div>
+
+            <!-- ABA TRANSAÇÕES -->
+            <div id="tab-transactions" class="tab-content hidden">
+                <section class="add-transaction-section">
+                    <h3>Nova Transação</h3>
+                    <form id="transaction-form" style="display: grid; grid-template-columns: 1fr 120px 180px 1fr auto; gap: 16px; align-items: end;">
+                        <div class="form-group">
+                            <label>Data</label>
+                            <input type="date" id="t-date" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Tipo</label>
+                            <select id="t-type" required>
+                                <option value="expense">Despesa</option>
+                                <option value="income">Receita</option>
+                                <option value="investment">Investimento</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Categoria</label>
+                            <select id="t-category" required>
+                                <!-- Preenchido via JS -->
+                            </select>
+                        </div>
+                        <div class="form-group" id="other-category-group" style="display: none;">
+                            <label>Especificar Outros</label>
+                            <input type="text" id="t-category-other" placeholder="Ex: Presente, Reembolso...">
+                        </div>
+                        <div class="form-group">
+                            <label>Valor (R$)</label>
+                            <input type="number" step="0.01" id="t-amount" placeholder="0,00" required>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <button type="submit" id="btn-submit-form" class="btn-primary">Adicionar</button>
+                            <button type="button" id="btn-cancel-edit" class="btn-primary" style="display: none; background-color: var(--text-secondary);">Cancelar</button>
+                        </div>
+                    </form>
+                </section>
+
+                <!-- Recent Transactions (Moved here or duplicated) -->
+                <section class="recent-transactions">
+                    <div class="section-header">
+                        <h3>Histórico de Transações</h3>
+                    </div>
+                    <div class="table-wrapper">
+                        <table class="transactions-table-full">
+                            <thead>
+                                <tr>
+                                    <th>Data</th>
+                                    <th>Categoria</th>
+                                    <th>Tipo</th>
+                                    <th>Valor</th>
+                                    <th>Ação</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Preenchido via JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+
+            <!-- ABA INVESTIMENTOS -->
+            <div id="tab-investments" class="tab-content hidden">
+                <div class="investments-layout" style="display: grid; grid-template-columns: 1fr 350px; gap: 24px;">
+                    
+                    <!-- Simulador -->
+                    <section class="card" style="padding: 32px;">
+                        <h2 style="margin-bottom: 24px; color: var(--accent-blue);">Simulador de Investimento (CDI)</h2>
+                        
+                        <div class="simulator-form" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div class="form-group">
+                                <label>Investimento Inicial (R$)</label>
+                                <input type="number" id="sim-initial" value="1000" step="100">
+                            </div>
+                            <div class="form-group">
+                                <label>Aporte Mensal (R$)</label>
+                                <input type="number" id="sim-monthly" value="100" step="50">
+                            </div>
+                            <div class="form-group">
+                                <label>Prazo (Meses)</label>
+                                <input type="number" id="sim-months" value="12">
+                            </div>
+                            <div class="form-group">
+                                <label>% do CDI (ex: 100)</label>
+                                <input type="number" id="sim-cdi-rate" value="100">
+                            </div>
+                        </div>
+
+                        <div class="simulation-results-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 32px;">
+                            <div class="result-box" style="background: var(--bg-color); padding: 16px; border-radius: 8px; border: 1px solid var(--border-color);">
+                                <span style="font-size: 12px; color: var(--text-secondary);">Total Bruto</span>
+                                <h3 id="res-total-bruto" style="color: var(--accent-green);">R$ 0,00</h3>
+                            </div>
+                            <div class="result-box" style="background: var(--bg-color); padding: 16px; border-radius: 8px; border: 1px solid var(--border-color);">
+                                <span style="font-size: 12px; color: var(--text-secondary);">Total em Juros</span>
+                                <h3 id="res-total-juros" style="color: var(--accent-blue);">R$ 0,00</h3>
+                            </div>
+                            <div class="result-box" style="background: var(--bg-color); padding: 16px; border-radius: 8px; border: 1px solid var(--border-color);">
+                                <span style="font-size: 12px; color: var(--text-secondary);">Imposto de Renda</span>
+                                <h3 id="res-ir" style="color: var(--accent-red);">R$ 0,00</h3>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 32px; height: 300px;">
+                            <canvas id="simulationChart"></canvas>
+                        </div>
+                    </section>
+
+                    <!-- Info de Mercado -->
+                    <aside style="display: flex; flex-direction: column; gap: 24px;">
+                        <div class="card" style="background: linear-gradient(135deg, #1e222d 0%, #2962ff22 100%);">
+                            <h3>Mercado Hoje</h3>
+                            <div style="margin-top: 16px;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                    <span>SELIC/CDI</span>
+                                    <strong style="color: var(--accent-green);">11.25% a.a</strong>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                                    <span>Poupança</span>
+                                    <span style="color: var(--text-secondary);">6.17% a.a</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between;">
+                                    <span>Inflação (IPCA)</span>
+                                    <span style="color: var(--accent-red);">4.50% a.a</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <h3>Seus Investimentos</h3>
+                            <div id="investments-list-summary" style="margin-top: 16px;">
+                                <!-- Preenchido via JS -->
+                            </div>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+
+            <!-- ABA CARTÕES -->
+            <div id="tab-cards" class="tab-content hidden">
+                <div class="card"><h2>Meus Cartões</h2><p style="color: var(--text-secondary); margin-top: 16px;">Em breve: Controle de faturas e limite disponível.</p></div>
+            </div>
+
+            <!-- ABA CONFIGURAÇÕES -->
+            <div id="tab-settings" class="tab-content hidden">
+                <div class="card" style="max-width: 600px;">
+                    <h2>Gestão de Dados</h2>
+                    <p style="color: var(--text-secondary); margin: 16px 0;">Proteja suas informações ou mova seus dados para outro navegador.</p>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 24px;">
+                        <button class="btn-primary" onclick="exportData()" style="background-color: var(--accent-blue);">
+                            📥 Baixar Backup (JSON)
+                        </button>
+                        
+                        <button class="btn-primary" onclick="document.getElementById('import-file').click()" style="background-color: var(--accent-green);">
+                            📤 Importar Backup
+                        </button>
+                        <input type="file" id="import-file" style="display: none;" accept=".json" onchange="importData(event)">
+                    </div>
+
+                    <div style="margin-top: 48px; padding-top: 24px; border-top: 1px solid var(--border-color);">
+                        <h3 style="color: var(--accent-red);">Zona de Perigo</h3>
+                        <button class="btn-primary" onclick="if(confirm('ATENÇÃO: Isso apagará TODOS os seus dados permanentemente. Deseja continuar?')) {localStorage.clear(); location.reload();}" style="background-color: var(--accent-red); margin-top: 16px; width: 100%;">
+                            Apagar Tudo (Reset de Fábrica)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>

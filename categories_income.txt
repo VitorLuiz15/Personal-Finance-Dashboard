@@ -1,0 +1,6 @@
+Salary
+Freelance
+Rental
+Bonus
+Gift
+Other
