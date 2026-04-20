@@ -1,5 +1,5 @@
-FinFlow - Ecossistema de Gestão Financeira
-O FinFlow é um projeto pessoal de gestão financeira que combina processamento robusto em Java com interfaces modernas. Ele oferece duas formas de uso: uma aplicação desktop com visual inspirado no design da Apple e um dashboard web interativo.
+FinanceFlow - Ecossistema de Gestão Financeira
+O FinanceFlow é um projeto pessoal de gestão financeira que combina processamento robusto em Java com interfaces modernas. Ele oferece duas formas de uso: uma aplicação desktop com visual inspirado no design da Apple e um dashboard web interativo.
 
 Funcionalidades
 Interface Desktop (Swing)
